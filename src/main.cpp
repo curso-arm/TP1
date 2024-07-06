@@ -65,7 +65,7 @@
 typedef enum 
 {
     MATRIX = 0,     //!< Muestra el mensaje en la matriz
-    CERELCIUS,      //!< Muestra la temperatura en grados celcius
+    CELCIUS,      //!< Muestra la temperatura en grados celcius
     FAHRENHEIT      //!< Muestra la temperatura en grados fahrenheit
 } system_state_e;
 
@@ -147,7 +147,7 @@ void inputsInit(void)
     \brief      Máquina de estados principal
                 MATRIX: muestra un mensaje en la matriz, el mensaje se recibe por la uart,
                         desplaza el texto a la izquierda.
-                CERELCIUS: muestra la temperatura en grados celcius
+                CELCIUS: muestra la temperatura en grados celcius
                 FAHRENHEIT: muestra la temperatura en grados fahrenheit
     \author     Nicolas Ferragamo
     \date       ${date}
@@ -161,7 +161,7 @@ void system_fsm (void)
             desplazar_izq(display, sizeof(display) / sizeof(display[0]));
         break;
 
-        case CERELCIUS:
+        case CELCIUS:
             temp_celcius_update(buffer, display, sizeof(display) / sizeof(display[0]));
         break;
 
@@ -235,7 +235,7 @@ void buttons (void)
                 
     if(celciusButton.read())
     {
-        system_state = CERELCIUS;
+        system_state = CELCIUS;
     }
 
     if(fahrenheitButton.read())
