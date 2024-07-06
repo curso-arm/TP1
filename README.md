@@ -8,7 +8,7 @@ El proyecto consiste en la generación y testeo de las funciones básicas qee pe
 
 Para ello en este trabajo se desarrollaron las funciones necesarias para el maneo de una matriz de leds de 7*5, de las cuales se dispone de 8 módulos, el manejo de botones, manejo de entradas analógicas, uso de temporizadores (con interrupciones) y manejo de comunicación serial.
 
-Como escusa de ese proyecto se planteó en este trabajo implementar un programa capaz de mostrar un mensaje en la matriz de leds, el cual se puede desplazar de derecha a izquierda y puede ser actualizado utilizando la interfaz serial.
+Como excusa para para el logro de ese proyecto se planteó en este trabajo implementar un programa capaz de mostrar un mensaje en la matriz de leds, el cual se puede desplazar de derecha a izquierda y puede ser actualizado utilizando la interfaz serial.
 
 En segundo lugar se implemento la lectura de un potenciómetro, que auspicia de sensor de temperatura y se muestra su valor tanto en la matriz de leds como en la PC. 
 
@@ -20,7 +20,7 @@ Se realizo el proyecto utilizando una placa de desarrollo de la familia STM32F4,
 
 ![placa](documents/nucleo.jpeg)
 
-Un módulo de matriz de leds de 7*5, el cual cuenta con 5 de registro de desplazamiento [74HC595](documnets/Cdocuments/CD74HC595.PDF) para las 40 columnas y un 6 registro para controlar las filas, que a su vez tienen un driver [ULN2003](documents/documents/ULN2003A.PDF). Las entradas de la placa tiene resisncias de pull-up, el outut_enable es activo bajo y el clear esta desactivado por hardware. Se utilizó un logic level shifter ya que la placa de desarrollo trabaja a 3,3V y la matriz a 5V. (limitación del ULN2003)
+Un módulo de matriz de leds de 7*5, el cual cuenta con 5 de registro de desplazamiento [74HC595](documnets/Cdocuments/CD74HC595.PDF) para las 40 columnas y un 6 registro para controlar las filas, que a su vez tienen un driver [ULN2003](documents/documents/ULN2003A.PDF). Las entradas de la placa tiene resistencias de pull-up, el output_enable es activo bajo y el clear esta desactivado por hardware. Se utilizó un logic level shifter ya que la placa de desarrollo trabaja a 3,3V y la matriz a 5V. (limitación del ULN2003)
 
 ![matriz](documents/matriz.jpg)
 ![circuito](documents/circuito.png)
@@ -60,19 +60,19 @@ Serial pc(USBTX, USBRX); //!< Comunicación serial con la PC
 
 ## Funcionamiento
 El programa se divide en 3 modos de funcionamiento, los cuales se seleccionan mediante los botones.
-El priemr boton selecciona el modo texto, el cual permite mostrar un mensae de hasta 32 caracteres en la matriz de leds. Al iniciar ese módulo se muestra un mensaje por defecto y se envía un mensaje a la PC pidiendo que escriba el mensae a mostrar. El mensae sera actualizado luego de presionar el caracter \r\n.
+El primer botón selecciona el modo texto, el cual permite mostrar un mensaje de hasta 32 caracteres en la matriz de leds. Al iniciar ese módulo se muestra un mensaje por defecto y se envía un mensaje a la PC pidiendo que escriba el mensaje a mostrar. El mensaje sera actualizado luego de presionar el caractér \r\n.
 Importante, la velocidad de comunicación debe ser de 115200 baudios.
 
-El mensae se desplaza a la deracha con un intervalo de 100ms entre cada columna. Se visualiza de manera circular, es decir, cuando se llega al final del mensaje se vuelve a mostrar el principio.
+El mensaje se desplaza a la derecha con un intervalo de 100ms entre cada columna. Se visualiza de manera circular, es decir, cuando se llega al final del mensaje se vuelve a mostrar el principio.
 
-El segundo modo de funcionamiento es el modo temperatura en grados celcius. En este modo se muestra la temperatura en la matriz de leds y en la PC. La temperatura se actualiza cada 1s. Durante el primer segundo se muestra la temperatura erronea por defecto, esperando a que se estabilice el sensor.
+El segundo modo de funcionamiento es el modo temperatura en grados celcius. En este modo se muestra la temperatura en la matriz de leds y en la PC. La temperatura se actualiza cada 1s. Durante el primer segundo se muestra la temperatura errónea por defecto, esperando a que se estabilice el sensor.
 
-Se realizan 10 mediciones a intervalos de 100ms y se promedian para obtener la temperatura.Simpre se muestra la última temperatura estable.
+Se realizan 10 mediciones a intervalos de 100ms y se promedian para obtener la temperatura. Siempre se muestra la última temperatura estable.
 
 El tercer modo de funcionamiento es el modo temperatura en grados fahrenheit. Funciona de la misma manera que el modo anterior, pero se muestra la temperatura en grados fahrenheit.
 
 ## Código
-Se desarrollaron diferentes librerías para la implemnetación de este programa, no se entrara en detalle ya que las mismas esta debidaente documentadas en los archivos .h y .cpp.
+Se desarrollaron diferentes librerías para la implementación de este programa, no se entrara en detalle ya que las mismas esta debidamente documentadas en los archivos .h y .cpp.
 
 - Librería para el manejo de la matriz de leds.
 - Librería para el manejo de delay. (no bloqueantes)
@@ -87,7 +87,7 @@ Se documento el código utilizando doxygen, el cual se puede generar la document
 
 
 ## Video
-El siguiente video muestra el funcionamiento del programa. (me di cuenta en este momento que tien un error de formato el video, pero no llego con el tiempo a volverlo a gravar. Disculpas por eso.)
+El siguiente video muestra el funcionamiento del programa. (me di cuenta en este momento que tine un error de formato el video, pero no llego con el tiempo a volverlo a gravar. Disculpas por eso.)
 
 <div align="left">
       <a href="https://youtu.be/3OxxepSsEAg">
