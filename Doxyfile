@@ -54,7 +54,7 @@ PROJECT_BRIEF          = "Practica 1 para la realizaciónd de una librería para
 PROJECT_LOGO           = ./logo.png
 
 # Set logo size
-LOGO_SIZE = 100 50
+PROJECT_LOGO_SIZE = 100 50
 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path

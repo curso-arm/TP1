@@ -23,7 +23,6 @@
  *** DEFINES PRIVADOS AL MODULO
  *********************************************************************************************************/
 
-
 /*********************************************************************************************************
  *** MACROS PRIVADAS AL MODULO
  *********************************************************************************************************/
@@ -40,7 +39,7 @@
  * @date    ${date}
  * @author  Nicolas Ferragamo nferragamo@frba.utn.edu.ar
  */
-
+//!todo completar la tabla de caracteres
 static uint8_t tabla[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // espacio
     0x00, 0x00, 0x5F, 0x00, 0x00, 0x00, // !
@@ -144,16 +143,15 @@ static uint8_t tabla[] = {
  *********************************************************************************************************/
 static delay_t delay_barrido, delay_desplazamiento;
 
-DigitalOut RCK(D2);      //!< Latch Clock o STC/*
-DigitalOut SCK(D3);     //!< Serial Clock o SHC/*
-DigitalOut SI(D4);      //!< Serial Input o DS/*
-DigitalOut OE_L(D5);    //!< Output Enable, es activo bajo/*
-
+DigitalOut RCK(D2);  //!< Latch Clock o STC
+DigitalOut SCK(D3);  //!< Serial Clock o SHC
+DigitalOut SI(D4);   //!< Serial Input o DS
+DigitalOut OE_L(D5); //!< Output Enable, es activo bajo
 
 /*********************************************************************************************************
  *** VARIABLES GLOBALES PRIVADAS AL MODULO
  *********************************************************************************************************/
-volatile estado_barrrido_e estado_barrido = FILA1;
+volatile estado_barrrido_e estado_barrido = FILA1; //!< Variable que indica la fila a barrer
 
 /*********************************************************************************************************
  *** PROTOTIPO DE FUNCIONES PRIVADAS AL MODULO
@@ -195,6 +193,20 @@ static void send_row(uint8_t *display, uint8_t row)
 /**
     \fn         void barrido_matriz(uint8_t* display)
     \brief      Función encargada de barrer la matriz de puntos
+    \details    La función se encarga de barrer la matriz de puntos, enviando una fila a la vez
+                cada elemento del array display representa una columna de la matriz, cada bit de cada
+                elemento representa una fila de esa columna.
+                Se ejecuta el barrido cada 2ms
+
+                columna 1 :  | x | F7 | F6 | F5 | F4 | F3 | F2 | F1 | F0 | 
+                columna 2 :  | x | F7 | F6 | F5 | F4 | F3 | F2 | F1 | F0 | 
+                .
+                .
+                .
+                columna n-1: | x | F7 | F6 | F5 | F4 | F3 | F2 | F1 | F0 |
+                columna n:   | x | F7 | F6 | F5 | F4 | F3 | F2 | F1 | F0 |
+
+                hay que pensar cada caracter de forma vertical, como si la memoria fuera una sucesión de columnas
     \date       ${date}
     \author     Nicolás Ferragamo
     \param      display [in] array donde se guarda el mensaje a mostrar
@@ -205,15 +217,15 @@ void barrido_matriz(uint8_t *display)
 {
     if (delayRead(&delay_barrido))
     {
-        OE_L.write(HIGH);
-        estado_barrido = (estado_barrrido_e)((uint8_t)estado_barrido + 1);
-        estado_barrido = (estado_barrrido_e)((uint8_t)estado_barrido % MAX_ROWS);
-        send_row(display, (uint8_t)estado_barrido);
-        RCK.write(HIGH);
-        wait_us(1);
-        RCK.write(LOW);
-        OE_L.write(LOW);
-        delayRead(&delay_barrido);
+        OE_L.write(HIGH);       // desactiva las salidas
+        estado_barrido = (estado_barrrido_e)((uint8_t)estado_barrido + 1);  // incrementa el estado de barrido
+        estado_barrido = (estado_barrrido_e)((uint8_t)estado_barrido % MAX_ROWS);  // si llega al final vuelve a la primera fila
+        send_row(display, (uint8_t)estado_barrido);   // envía la fila correspondiente
+        RCK.write(HIGH);       // genera el flanco del segundo latch (se memoriza esta nueva columna)
+        wait_us(1);            // espera 1us por el flanco, para que el latch tome el dato
+        RCK.write(LOW);        // desactiva el segundo latch
+        OE_L.write(LOW);       // activa las salidas
+        delayRead(&delay_barrido);  // reinicia el delay
     }
 }
 
@@ -244,6 +256,7 @@ void desplazar_izq(uint8_t *display, size_t cols)
 /**
     \fn         void inicializar_matriz(void);
     \brief      Función encargada de inicializar la matriz de puntos
+                se establece el barrido cada 2ms y el desplazamiento cada 100ms
     \date       ${date}
     \author     Nicolás Ferragamo
     \return     void
@@ -257,26 +270,42 @@ void inicializar_matriz(void)
 /**
     \fn         void enviar_mensaje(uint8_t* display, const char* mensaje)
     \brief      Función encargada escribir el mensae deseado en el array a enviar
+    \details    La función recibe un mensaje y lo convierte en una secuencia de bits para ser
+                mostrado en la matriz. Para ello lee cada caracter del mensaje en ascii y lo 
+                busca en la tabla de caracteres pensado para esta matriz, luego guarda en el array
+                display la secuencia de bits correspondiente a ese caracter. Esto se repite para todo el 
+                mensaje.
+                Solo se implemento la tabla hasta el caracter }, los demas estan pendientes de completar.
     \date       ${date}
     \author     Nicolás Ferragamo
     \return     void
 */
 void enviar_mensaje(uint8_t *display, size_t max_disp, const uint8_t *mensaje)
 {
-    uint8_t indice, i = 0;
-    memset(display, 0, max_disp);
-    for (uint8_t j = 0; mensaje[j] != '\0' && i < max_disp; j++)
+    uint8_t indice, i = 0;      // indice para recorrer el array display (que guarda cada columna de la matriz)
+    memset(display, 0, max_disp);   // limpia el array ya que al desplazarlo se pueden quedar residuos
+    for (uint8_t j = 0; mensaje[j] != '\0' && i < max_disp; j++)    // recorre el mensaje
     {
-        indice = mensaje[j] - 32;
-        for (uint8_t k = 0; k < 6; k++)
+        /* se resta 32 para que el primer caracter de la tabla sea el espacio  ya que los anteriores
+        son caracteres no imprimibles */
+        indice = mensaje[j] - 32;   
+        /* Cada caracter representa 6 elementos de la tabla, ya que cada caracter ocupa 6 columnas
+        de la matriz, por tal motivo se hace este segundo bucle.*/
+        for (uint8_t k = 0; k < 6; k++)   
         {
-            display[i] = tabla[indice * 6 + k];
+            display[i] = tabla[indice * 6 + k]; // guarda el caracter en el array, se ajusta el índice por 6 por lo comentado anteriormente.
             i++;
         }
     }
 }
 
-void clockCycle()
+/**
+    \fn           clockCycle()
+    \brief        Función que genera el flanco para la salida SCK
+    \author       Nombre
+    \date         ${date}
+*/
+void clockCycle(void)
 {
     SCK.write(HIGH);
     wait_us(1);

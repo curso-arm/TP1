@@ -42,7 +42,7 @@ extern "C" {
  *** TIPO DE DATOS GLOBALES
 *********************************************************************************************************/
 /**
- * @struct  delay_
+ * @struct  delay_t
  * @brief   Contiene las variables necesarias para el maneo de los delays
  * @date    ${date}
  * @author  Nicolas Ferragamo nferragamo@frba.utn.edu.ar
