@@ -68,13 +68,13 @@ typedef enum
  *** PROTOTIPOS DE FUNCIONES GLOBALES
 **********************************************************************************************************/
 
-extern void desplazar_izq(uint8_t* display, size_t cols);
+void desplazar_izq(uint8_t* display, size_t cols);
 
-extern void inicializar_matriz(void);
+void inicializar_matriz(void);
 
-extern void enviar_mensaje(uint8_t* display, size_t max_disp, const uint8_t* mensaje);
+void enviar_mensaje(uint8_t* display, size_t max_disp, const uint8_t* mensaje);
 
-extern void barrido_matriz(uint8_t *display);
+void barrido_matriz(uint8_t *display);
 
 #ifdef __cplusplus
 }

@@ -34,7 +34,6 @@
 /*********************************************************************************************************
  *** INCLUDES
  *********************************************************************************************************/
-#include "delay.h"
 #include "mbed.h"
 #include "arm_book_lib.h"
 #include "delay.h"
@@ -58,7 +57,7 @@
 
 /**
  *  \enum       system_state_e
- *  \brief      Estados de la máquina de estados principal, indica que tarea va a eecutar
+ *  \brief      Estados de la máquina de estados principal, indica que tarea va a ejecutar
     \author     Nicolas Ferragamo
     \date       ${date}
 */
@@ -95,7 +94,7 @@ system_state_e system_state = MATRIX;       //!< estado de la máquina de estado
 
 Ticker temp_1ms;                            //!< temporizador de 1ms se usa para dar el tiempo a la librería delay
 
-DigitalIn msgButton(D6);                    //!< botón para mostrar un mensaje en la matriz
+InterruptIn msgButton(D6);                    //!< botón para mostrar un mensaje en la matriz
 DigitalIn celciusButton(D7);                //!< botón para mostrar la temperatura en grados celcius
 DigitalIn fahrenheitButton(D8);             //!< botón para mostrar la temperatura en grados fahrenheit
 
@@ -105,7 +104,11 @@ UnbufferedSerial uartUsb(USBTX, USBRX, 115200);     //!< comunicación serial
 /*********************************************************************************************************
  *** VARIABLES GLOBALES PRIVADAS AL MODULO
  *********************************************************************************************************/
+bool msgButtonState = false;
 
+/*********************************************************************************************************
+ *** PROTOTIPO DE FUNCIONES PRIVADAS AL MODULO
+ *********************************************************************************************************/
 void inputsInit(void);      
 
 void system_fsm(void);
@@ -114,10 +117,7 @@ void matrix(void);
 
 void buttons(void);
 
-/*********************************************************************************************************
- *** PROTOTIPO DE FUNCIONES PRIVADAS AL MODULO
- *********************************************************************************************************/
-
+void msgButtonCallback (void);
 
 /*********************************************************************************************************
  *** FUNCIONES PRIVADAS AL MODULO
@@ -137,6 +137,7 @@ void buttons(void);
 void inputsInit(void)
 {
     msgButton.mode(PullDown);
+    msgButton.rise(&msgButtonCallback);
     celciusButton.mode(PullDown);
     fahrenheitButton.mode(PullDown);
 }
@@ -226,8 +227,9 @@ char receivedChar;
 */
 void buttons (void)
 {
-    if(msgButton.read())
+    if(msgButtonState == true)
     {
+        msgButtonState = false;
         system_state = MATRIX;
         enviar_mensaje(display, sizeof(display) / sizeof(display[0]), (const uint8_t *)"TP1 Nicolas Ferragamo");
         uartUsb.write("Ingrese el mensaje a mostrar: \r\n",32);
@@ -236,14 +238,21 @@ void buttons (void)
     if(celciusButton.read())
     {
         system_state = CELCIUS;
+        msgButton.rise(&msgButtonCallback);
     }
 
     if(fahrenheitButton.read())
     {
         system_state = FAHRENHEIT;
+        msgButton.rise(&msgButtonCallback);
     }
 }
 
+void msgButtonCallback (void)
+{
+    msgButtonState = true;
+    msgButton.rise(NULL);
+}
 
 /**
     \fn         int main(void)

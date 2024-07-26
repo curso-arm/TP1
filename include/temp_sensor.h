@@ -49,15 +49,15 @@ extern "C" {
  *** PROTOTIPOS DE FUNCIONES GLOBALES
 **********************************************************************************************************/
 
-extern void temp_sensor_Init(uint64_t fs, uint64_t screen_update);
+void temp_sensor_Init(uint64_t fs, uint64_t screen_update);
 
-extern float temp_sensor_read(void);
+float temp_sensor_read(void);
 
-extern float celcius2fahrenheit(float temp_c);
+float celcius2fahrenheit(float temp_c);
 
-extern void temp_celcius_update(char* buffer, uint8_t* display,size_t display_leng);
+void temp_celcius_update(char* buffer, uint8_t* display,size_t display_leng);
 
-extern void temp_fahrenheit_update(char* buffer, uint8_t* display,size_t display_leng);
+void temp_fahrenheit_update(char* buffer, uint8_t* display,size_t display_leng);
 
 #ifdef __cplusplus
 }

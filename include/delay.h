@@ -62,13 +62,13 @@ typedef struct
  *** PROTOTIPOS DE FUNCIONES GLOBALES
 **********************************************************************************************************/
 
-extern void delayInit(delay_t *delay, uint64_t duration);
+void delayInit(delay_t *delay, uint64_t duration);
 
-extern bool delayRead(delay_t *delay);
+bool delayRead(delay_t *delay);
 
-extern void delayWrite(delay_t *delay, uint64_t duration);
+void delayWrite(delay_t *delay, uint64_t duration);
 
-extern void delay_1ms (void);
+void delay_1ms (void);
 
 
 #ifdef __cplusplus

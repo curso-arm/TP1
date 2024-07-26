@@ -99,6 +99,7 @@ void temp_sensor_Init(uint64_t fs, uint64_t screen_update)
     delayInit(&adc_sample_period, fs);
     delayInit(&temp_update, screen_update);
     tempSensor.set_reference_voltage(3.3);
+    temp_sensor_read();
 }
 
 /**
@@ -112,13 +113,13 @@ void temp_sensor_Init(uint64_t fs, uint64_t screen_update)
 float temp_sensor_read(void)
 {
     static uint8_t adc_index = 0;
-    static float adc_sample = 0, result = -99.9; // Inicializo la variable result con un valor inválido
+    static float adc_sample = 0, result = tempSensor.read_voltage(); // Inicializo la variable result con un valor inválido
 
     if (delayRead(&adc_sample_period))
     {
         if (adc_index == AVERAGE_SAMPLES)
         {
-            result = adc_sample / AVERAGE_SAMPLES;
+            result = adc_sample / (float)AVERAGE_SAMPLES;
             adc_index = 0;
             adc_sample = 0;
         }
